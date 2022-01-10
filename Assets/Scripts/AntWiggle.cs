@@ -82,17 +82,27 @@ public class AntWiggle : MonoBehaviour
     {
         if (other.tag.Equals("Tree"))
         {
-            if (antType.Equals(AntSpawner.antTypes.Default))
+            int multiplyer = 1;
+
+            if (spawn.doesHaveQueen)
             {
-                spawn.leafCount++;
+                multiplyer++;
             }
-            else if (antType.Equals(AntSpawner.antTypes.Jumping))
+
+            for (int i = 0; i < multiplyer; i++)
             {
-                spawn.leafCount += 5;
-            }
-            else if (antType.Equals(AntSpawner.antTypes.Flying))
-            {
-                spawn.leafCount += 10;
+                if (antType.Equals(AntSpawner.antTypes.Default))
+                {
+                    spawn.leafCount++;
+                }
+                else if (antType.Equals(AntSpawner.antTypes.Jumping))
+                {
+                    spawn.leafCount += 5;
+                }
+                else if (antType.Equals(AntSpawner.antTypes.Flying))
+                {
+                    spawn.leafCount += 10;
+                }
             }
 
             spawn.antCount--;
