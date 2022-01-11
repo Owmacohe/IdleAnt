@@ -97,15 +97,14 @@ public class AntWiggle : MonoBehaviour
                 }
                 else if (antType.Equals(AntSpawner.antTypes.Jumping))
                 {
-                    spawn.leafCount += 5;
+                    spawn.leafCount += 2;
                 }
                 else if (antType.Equals(AntSpawner.antTypes.Flying))
                 {
-                    spawn.leafCount += 10;
+                    spawn.leafCount += 5;
                 }
             }
 
-            spawn.antCount--;
             Destroy(gameObject);
         }
     }

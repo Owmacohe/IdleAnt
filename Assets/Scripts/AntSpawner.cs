@@ -16,12 +16,14 @@ public class AntSpawner : MonoBehaviour
     [HideInInspector]
     public bool doesHaveQueen;
     private GameObject multi;
+    private DecisionManager decide;
 
     private void Start()
     {
         antPrefab = Resources.Load<GameObject>("Ant");
         multi = GameObject.FindGameObjectWithTag("Multiplyer");
         multi.SetActive(false);
+        decide = FindObjectOfType<DecisionManager>();
     }
 
     private void Update()
@@ -41,6 +43,8 @@ public class AntSpawner : MonoBehaviour
 
             lastLeafCount = leafCount;
         }
+
+        float antRateModified = antRate * decide.workerSatisfaction;
 
         if (antRate > 0 && Random.Range(0, antRate) <= 1)
         {
@@ -76,7 +80,6 @@ public class AntSpawner : MonoBehaviour
             {
                 Destroy(GameObject.FindGameObjectWithTag("QueenButton"));
                 multi.SetActive(true);
-                FindObjectOfType<DecisionManager>().hasQueen = true;
 
                 GameObject queen = Instantiate(Resources.Load<GameObject>("Queen"), transform);
                 queen.transform.SetParent(transform.parent);

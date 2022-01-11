@@ -9,6 +9,7 @@ TagManager:
   - Multiplyer
   - Question
   - Decision
+  - Satisfaction
   layers:
   - Default
   - TransparentFX
