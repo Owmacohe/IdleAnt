@@ -22,6 +22,9 @@ public class DecisionManager : MonoBehaviour
         { "Implement universal basic ant income?",
             "0", "-30", "0.3",
             "0", "30", "-0.3" },
+        { "Invest in public transport?",
+            "20", "-20", "0.3",
+            "-30", "0", "-0.3" },
         { "Termites have set up nearby! Send soldiers off to invade?",
             "-50", "0", "-0.2",
             "0", "-30", "0" }
@@ -44,11 +47,20 @@ public class DecisionManager : MonoBehaviour
             ((spawn.leafCount - spawn.antCount) / 500f) // each ant needs 1 leaf, which affects morale by a factor of 0.002%
         , 2);
 
-        satisfaction.text = "Worker satisfaction: " + (workerSatisfaction * 100) + "%";
-
-        if (spawn.doesHaveQueen && !isAnswering && Random.Range(0, 5000) <= 1)
+        if (!spawn.isGamePaused)
         {
-            askQuestion();
+            satisfaction.text = "Worker satisfaction: " + (workerSatisfaction * 100) + "%";
+
+            if ((workerSatisfaction * 100) <= 50)
+            {
+                spawn.isGamePaused = true;
+                decision.SetActive(false);
+            }
+
+            if (spawn.doesHaveQueen && currentQuestion < questions.Length && !isAnswering && Random.Range(0, 5000) <= 1)
+            {
+                askQuestion();
+            }
         }
     }
 
@@ -62,38 +74,41 @@ public class DecisionManager : MonoBehaviour
 
     public void answer(bool isYes)
     {
-        int[] answerValues = {
-            int.Parse(questions[currentQuestion, 1]),
-            int.Parse(questions[currentQuestion, 2]),
-            int.Parse(questions[currentQuestion, 4]),
-            int.Parse(questions[currentQuestion, 5])
-        };
-
-        if (
-            isYes &&
-            (spawn.antCount + answerValues[0] >= 0) &&
-            (spawn.leafCount + answerValues[1] >= 0))
+        if (!spawn.isGamePaused)
         {
-            spawn.antCount += answerValues[0];
-            spawn.leafCount += answerValues[1];
-            baseSatisfaction += float.Parse(questions[currentQuestion, 3]);
+            int[] answerValues = {
+                int.Parse(questions[currentQuestion, 1]),
+                int.Parse(questions[currentQuestion, 2]),
+                int.Parse(questions[currentQuestion, 4]),
+                int.Parse(questions[currentQuestion, 5])
+            };
 
-            decision.SetActive(false);
-            isAnswering = false;
-            currentQuestion++;
-        }
-        else if (
-            !isYes &&
-            (spawn.antCount + answerValues[2] >= 0) &&
-            (spawn.leafCount + answerValues[3] >= 0))
-        {
-            spawn.antCount += answerValues[2];
-            spawn.leafCount += answerValues[3];
-            baseSatisfaction += float.Parse(questions[currentQuestion, 6]);
+            if (
+                isYes &&
+                (spawn.antCount + answerValues[0] >= 0) &&
+                (spawn.leafCount + answerValues[1] >= 0))
+            {
+                spawn.antCount += answerValues[0];
+                spawn.leafCount += answerValues[1];
+                baseSatisfaction += float.Parse(questions[currentQuestion, 3]);
 
-            decision.SetActive(false);
-            isAnswering = false;
-            currentQuestion++;
+                decision.SetActive(false);
+                isAnswering = false;
+                currentQuestion++;
+            }
+            else if (
+                !isYes &&
+                (spawn.antCount + answerValues[2] >= 0) &&
+                (spawn.leafCount + answerValues[3] >= 0))
+            {
+                spawn.antCount += answerValues[2];
+                spawn.leafCount += answerValues[3];
+                baseSatisfaction += float.Parse(questions[currentQuestion, 6]);
+
+                decision.SetActive(false);
+                isAnswering = false;
+                currentQuestion++;
+            }
         }
     }
 

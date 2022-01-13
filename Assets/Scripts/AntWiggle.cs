@@ -21,50 +21,53 @@ public class AntWiggle : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position.y >= 3)
+        if (!spawn.isGamePaused)
         {
-            rb.velocity += Vector3.down;
-        }
-        else if (transform.position.y <= -3)
-        {
-            spawn.antCount--;
-            Destroy(gameObject);
-        }
-
-        if (!isJumping && antType.Equals(AntSpawner.antTypes.Jumping))
-        {
-            wiggleRate = 30;
-            wiggleAmount = 4;
-
-            GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("Jumping");
-
-            isJumping = true;
-        }
-        else if (!isFlying && antType.Equals(AntSpawner.antTypes.Flying))
-        {
-            wiggleRate = 30;
-            wiggleAmount = 4;
-
-            rb.drag /= 2;
-
-            CapsuleCollider[] coll = GetComponents<CapsuleCollider>();
-            coll[0].radius = 4;
-            coll[0].height = 10;
-            coll[1].radius = 4;
-            coll[1].height = 10;
-
-            GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("Flying");
-
-            isFlying = true;
-        }
-
-        if (Random.Range(0, wiggleRate) <= 1)
-        {
-            rb.velocity += randomVector3();
-
-            if (!antType.Equals(AntSpawner.antTypes.Default))
+            if (transform.position.y >= 3)
             {
-                rb.velocity = rb.velocity.y * Vector3.up;
+                rb.velocity += Vector3.down;
+            }
+            else if (transform.position.y <= -3)
+            {
+                spawn.antCount--;
+                Destroy(gameObject);
+            }
+
+            if (!isJumping && antType.Equals(AntSpawner.antTypes.Jumping))
+            {
+                wiggleRate = 30;
+                wiggleAmount = 4;
+
+                GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("Jumping");
+
+                isJumping = true;
+            }
+            else if (!isFlying && antType.Equals(AntSpawner.antTypes.Flying))
+            {
+                wiggleRate = 30;
+                wiggleAmount = 4;
+
+                rb.drag /= 2;
+
+                CapsuleCollider[] coll = GetComponents<CapsuleCollider>();
+                coll[0].radius = 4;
+                coll[0].height = 10;
+                coll[1].radius = 4;
+                coll[1].height = 10;
+
+                GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("Flying");
+
+                isFlying = true;
+            }
+
+            if (Random.Range(0, wiggleRate) <= 1)
+            {
+                rb.velocity += randomVector3();
+
+                if (!antType.Equals(AntSpawner.antTypes.Default))
+                {
+                    rb.velocity = rb.velocity.y * Vector3.up;
+                }
             }
         }
     }

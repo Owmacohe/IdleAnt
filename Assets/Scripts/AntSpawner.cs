@@ -14,7 +14,7 @@ public class AntSpawner : MonoBehaviour
     public int antCount, leafCount;
     private int lastAntCount, lastLeafCount;
     [HideInInspector]
-    public bool doesHaveQueen;
+    public bool doesHaveQueen, isGamePaused;
     private GameObject multi;
     private DecisionManager decide;
 
@@ -44,66 +44,72 @@ public class AntSpawner : MonoBehaviour
             lastLeafCount = leafCount;
         }
 
-        float antRateModified = antRate * decide.workerSatisfaction;
-
-        if (antRate > 0 && Random.Range(0, antRate) <= 1)
+        if (!isGamePaused)
         {
-            spawnAnt("Default");
+            float antRateModified = antRate * decide.workerSatisfaction;
+
+            if (antRate > 0 && Random.Range(0, antRate) <= 1)
+            {
+                spawnAnt("Default");
+            }
         }
     }
 
     public void spawnAnt(string typeName)
     {
-        antTypes antType = antTypes.Default;
+        if (!isGamePaused)
+        {
+            antTypes antType = antTypes.Default;
 
-        if (typeName.Equals("Jumping"))
-        {
-            antType = antTypes.Jumping;
-        }
-        else if (typeName.Equals("Flying"))
-        {
-            antType = antTypes.Flying;
-        }
-        else if (typeName.Equals("Queen"))
-        {
-            antType = antTypes.Queen;
-            doesHaveQueen = true;
-        }
-
-        if (
-            antType.Equals(antTypes.Default) ||
-            (antType.Equals(antTypes.Jumping) && leafCount >= 5) ||
-            (antType.Equals(antTypes.Flying) && leafCount >= 15) ||
-            (antType.Equals(antTypes.Queen) && leafCount >= 30))
-        {
-            if (antType.Equals(antTypes.Queen))
+            if (typeName.Equals("Jumping"))
             {
-                Destroy(GameObject.FindGameObjectWithTag("QueenButton"));
-                multi.SetActive(true);
-
-                GameObject queen = Instantiate(Resources.Load<GameObject>("Queen"), transform);
-                queen.transform.SetParent(transform.parent);
-                queen.transform.localPosition = Vector3.up * 1.9f;
-
-                antCount++;
-                leafCount -= 30;
+                antType = antTypes.Jumping;
             }
-            else
+            else if (typeName.Equals("Flying"))
             {
-                GameObject newAnt = Instantiate(antPrefab, transform.position, getRandomQuaternion());
-                newAnt.GetComponent<AntWiggle>().antType = antType;
-                newAnt.transform.SetParent(transform.parent);
-                newAnt.GetComponent<Rigidbody>().velocity += Vector3.up;
+                antType = antTypes.Flying;
+            }
+            else if (typeName.Equals("Queen"))
+            {
+                antType = antTypes.Queen;
+                doesHaveQueen = true;
+            }
 
-                antCount++;
-
-                if (antType.Equals(antTypes.Jumping))
+            if (
+                antType.Equals(antTypes.Default) ||
+                (antType.Equals(antTypes.Jumping) && leafCount >= 5) ||
+                (antType.Equals(antTypes.Flying) && leafCount >= 15) ||
+                (antType.Equals(antTypes.Queen) && leafCount >= 30))
+            {
+                if (antType.Equals(antTypes.Queen))
                 {
-                    leafCount -= 5;
+                    Destroy(GameObject.FindGameObjectWithTag("QueenButton"));
+                    multi.SetActive(true);
+
+                    GameObject queen = Instantiate(Resources.Load<GameObject>("Queen"), transform);
+                    queen.transform.SetParent(transform.parent);
+                    queen.transform.localPosition = Vector3.up * 1.9f;
+
+                    antCount++;
+                    leafCount -= 30;
                 }
-                else if (antType.Equals(antTypes.Flying))
+                else
                 {
-                    leafCount -= 15;
+                    GameObject newAnt = Instantiate(antPrefab, transform.position, getRandomQuaternion());
+                    newAnt.GetComponent<AntWiggle>().antType = antType;
+                    newAnt.transform.SetParent(transform.parent);
+                    newAnt.GetComponent<Rigidbody>().velocity += Vector3.up;
+
+                    antCount++;
+
+                    if (antType.Equals(antTypes.Jumping))
+                    {
+                        leafCount -= 5;
+                    }
+                    else if (antType.Equals(antTypes.Flying))
+                    {
+                        leafCount -= 15;
+                    }
                 }
             }
         }

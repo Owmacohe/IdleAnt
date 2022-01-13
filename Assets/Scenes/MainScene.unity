@@ -3985,7 +3985,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f4354ee2697ce47ba1d7de739ec479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasQueen: 0
   workerSatisfaction: 0
   baseSatisfaction: 0
 --- !u!1001 &1396762846
@@ -4460,6 +4459,7 @@ MonoBehaviour:
   antCount: 0
   leafCount: 0
   doesHaveQueen: 0
+  isGamePaused: 0
 --- !u!1 &1544060362 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 62d26f40f172ce140a76c52b6392b1b5, type: 3}
