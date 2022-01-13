@@ -72,7 +72,6 @@ public class AntSpawner : MonoBehaviour
             else if (typeName.Equals("Queen"))
             {
                 antType = antTypes.Queen;
-                doesHaveQueen = true;
             }
 
             if (
@@ -85,6 +84,7 @@ public class AntSpawner : MonoBehaviour
                 {
                     Destroy(GameObject.FindGameObjectWithTag("QueenButton"));
                     multi.SetActive(true);
+                    doesHaveQueen = true;
 
                     GameObject queen = Instantiate(Resources.Load<GameObject>("Queen"), transform);
                     queen.transform.SetParent(transform.parent);

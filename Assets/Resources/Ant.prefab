@@ -91,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1148b3029a3e1249b0a496dfb44025a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wiggleRate: 100
+  wiggleRate: 50
   wiggleAmount: 1.1
   antType: 0
 --- !u!1001 &8635777286411360003

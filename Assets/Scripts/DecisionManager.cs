@@ -2,41 +2,56 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DecisionManager : MonoBehaviour
 {
-    private GameObject decision;
+    private GameObject decision, consequences;
     [HideInInspector]
     public float workerSatisfaction;
     [HideInInspector]
     public float baseSatisfaction;
     private AntSpawner spawn;
     private TMP_Text satisfaction;
+    private GameObject flags, loseScreen;
+    private bool hasShownLoseScreen;
 
     private bool isAnswering;
     private int currentQuestion;
     private string[,] questions = {
+        { "Invest in public transport?",
+            "20", "-20", "0.3",
+            "-30", "0", "-0.3" },
         { "Commit tax fraud?",
             "0", "50", "-0.4",
             "0", "0", "0" },
         { "Implement universal basic ant income?",
             "0", "-30", "0.3",
             "0", "30", "-0.3" },
-        { "Invest in public transport?",
-            "20", "-20", "0.3",
-            "-30", "0", "-0.3" },
         { "Termites have set up nearby! Send soldiers off to invade?",
             "-50", "0", "-0.2",
-            "0", "-30", "0" }
+            "0", "-30", "0" },
+        { "Break up private leaf monopolies?",
+            "0", "-50", "0.4",
+            "0", "50", "-0.4" },
+        { "Ban opposing literature?",
+            "0", "0", "-0.3",
+            "0", "0", "0.3" }
     };
 
     private void Start()
     {
         decision = GameObject.FindGameObjectWithTag("Decision");
         decision.SetActive(false);
+        consequences = GameObject.FindGameObjectWithTag("Consequences");
+        consequences.SetActive(false);
         baseSatisfaction = 1;
         spawn = FindObjectOfType<AntSpawner>();
         satisfaction = GameObject.FindGameObjectWithTag("Satisfaction").GetComponent<TMP_Text>();
+        flags = GameObject.FindGameObjectWithTag("Flags");
+        flags.SetActive(false);
+        loseScreen = GameObject.FindGameObjectWithTag("Lose");
+        loseScreen.SetActive(false);
     }
 
     private void Update()
@@ -57,9 +72,25 @@ public class DecisionManager : MonoBehaviour
                 decision.SetActive(false);
             }
 
-            if (spawn.doesHaveQueen && currentQuestion < questions.Length && !isAnswering && Random.Range(0, 5000) <= 1)
+            if (spawn.doesHaveQueen && currentQuestion < questions.GetLength(0) && !isAnswering && Random.Range(0, 1500) <= 1)
             {
                 askQuestion();
+            }
+        }
+        else
+        {
+            flags.SetActive(true);
+
+            if (flags.transform.localPosition.y < 0)
+            {
+                flags.transform.position += Vector3.up * 0.008f;
+            }
+            else
+            {
+                if (!hasShownLoseScreen)
+                {
+                    Invoke("showLoseScreen", 3);
+                }
             }
         }
     }
@@ -93,7 +124,15 @@ public class DecisionManager : MonoBehaviour
                 baseSatisfaction += float.Parse(questions[currentQuestion, 3]);
 
                 decision.SetActive(false);
-                isAnswering = false;
+
+                consequences.SetActive(true);
+                consequences.GetComponentInChildren<TMP_Text>().text =
+                    "Ants: " + answerValues[0] +
+                    "\nLeaves: " + answerValues[1] +
+                    "\nSatisfaction: " + (float.Parse(questions[currentQuestion, 3]) * 100) + "%";
+
+                Invoke("hideConsequences", 3);
+
                 currentQuestion++;
             }
             else if (
@@ -106,7 +145,15 @@ public class DecisionManager : MonoBehaviour
                 baseSatisfaction += float.Parse(questions[currentQuestion, 6]);
 
                 decision.SetActive(false);
-                isAnswering = false;
+
+                consequences.SetActive(true);
+                consequences.GetComponentInChildren<TMP_Text>().text =
+                    "Ants: " + answerValues[2] +
+                    "\nLeaves: " + answerValues[3] +
+                    "\nSatisfaction: " + (float.Parse(questions[currentQuestion, 6]) * 100) + "%";
+
+                Invoke("hideConsequences", 3);
+
                 currentQuestion++;
             }
         }
@@ -115,5 +162,22 @@ public class DecisionManager : MonoBehaviour
     private float roundFloat(float f, int d)
     {
         return (float)decimal.Round((decimal)f, d);
+    }
+
+    public void restartGame()
+    {
+        SceneManager.LoadSceneAsync("MainScene");
+    }
+
+    private void hideConsequences()
+    {
+        consequences.SetActive(false);
+        isAnswering = false;
+    }
+
+    private void showLoseScreen()
+    {
+        loseScreen.SetActive(true);
+        hasShownLoseScreen = true;
     }
 }
